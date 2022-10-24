@@ -80,6 +80,11 @@ namespace Logic.Repository
         {
             throw new NotImplementedException();
         }
+
+        Task<IQueryable<UserDto>> IGenericRepository<UserDto>.GetAllIncluding(params Expression<Func<UserDto, object>>[] includeProperties)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public interface IUserRepository : IGenericRepository<UserDto>

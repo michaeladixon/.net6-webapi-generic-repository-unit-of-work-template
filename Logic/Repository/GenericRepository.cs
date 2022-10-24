@@ -1,6 +1,7 @@
 ﻿using Data.Entities.Context;
 using Logic.Repository.Generic.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Linq.Expressions;
 
 
@@ -80,9 +81,9 @@ namespace Logic.Repository
             return await _context.Set<T>().Where(predicate).ToListAsync();
         }
 
-        public IQueryable<T> GetAllIncluding(params Expression<Func<T, object>>[] includeProperties)
+        public async Task<IQueryable<T>> GetAllIncluding(params Expression<Func<T, object>>[] includeProperties)
         {
-            IQueryable<T> queryable = (IQueryable<T>)GetAllAsync();
+            IQueryable<T> queryable = (IQueryable<T>)await GetAllAsync();
             foreach (Expression<Func<T, object>> includeProperty in includeProperties)
             {
 

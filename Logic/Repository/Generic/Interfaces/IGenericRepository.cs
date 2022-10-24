@@ -17,7 +17,7 @@ namespace Logic.Repository.Generic.Interfaces
         Task<T> FindAsync(Expression<Func<T, bool>> match);
         Task<ICollection<T>> FindByAsync(Expression<Func<T, bool>> predicate);
         Task<ICollection<T>> GetAllAsync();
-        IQueryable<T> GetAllIncluding(params Expression<Func<T, object>>[] includeProperties);
+        Task<IQueryable<T>> GetAllIncluding(params Expression<Func<T, object>>[] includeProperties);
         Task<T> GetAsync(string id);
         Task<int> SaveAsync();
         Task<T> UpdateAsync(T t, object key);
