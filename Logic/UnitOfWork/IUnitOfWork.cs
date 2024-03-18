@@ -1,6 +1,6 @@
 ﻿
 
-using Data.Entities.Context;
+using Data.Context.Entities;
 using Logic.Repository.Generic.Interfaces;
 using Logic.Repository;
 using System.Collections;
@@ -13,7 +13,9 @@ namespace Logic.IUnitOfWork
 
         Task Complete();
 
-        //IApplicationDbContextProcedures GetProcedures();
+        IApplicationDbContextProcedures GetProcedures();
+
+        ApplicationDbContext CreateDbContext();
 
     }
 
@@ -54,16 +56,21 @@ namespace Logic.IUnitOfWork
             return (IGenericRepository<TEntity>)_repositories[type];
         }
 
-        //public IApplicationDbContextProcedures GetProcedures()
-        //{
+        public IApplicationDbContextProcedures GetProcedures()
+        {
 
-        //    return _context.GetProcedures();
-        //}
+            return _context.GetProcedures();
+        }
 
 
         public void Dispose()
         {
             _context.Dispose();
+        }
+
+        public ApplicationDbContext CreateDbContext()
+        {
+            return _context;
         }
     }
 }

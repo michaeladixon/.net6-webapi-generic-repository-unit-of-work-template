@@ -1,5 +1,5 @@
 ﻿using System;
-using Data.Entities.Context;
+using Data.Context.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

@@ -1,8 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using AutoMapper;
-using Data.Entities.Context;
+using Data.Context.Entities;
 using Logic.Attributes;
 using static Logic.Enums;
 using Models;
@@ -42,15 +41,6 @@ namespace API
 
             RegisterAssemblyServices("Logic", services);
             RegisterAssemblyServices("Models", services);
-
-            services.AddAutoMapper(typeof(Program));
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile(new AutoMapperProfiles());
-            });
-            var mapper = mapperConfig.CreateMapper();
-
-            services.AddSingleton(mapper);
 
             services.AddControllers();
             services.AddEndpointsApiExplorer();

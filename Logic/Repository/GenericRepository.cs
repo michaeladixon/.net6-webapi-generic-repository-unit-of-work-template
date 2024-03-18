@@ -1,4 +1,4 @@
-﻿using Data.Entities.Context;
+﻿using Data.Context.Entities;
 using Logic.Repository.Generic.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;

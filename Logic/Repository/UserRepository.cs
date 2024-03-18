@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Data.Entities.Context;
+﻿using Data.Context.Entities;
 using Logic.Attributes;
 using Logic.IUnitOfWork;
 using Logic.Repository.Generic.Interfaces;
@@ -12,83 +11,22 @@ namespace Logic.Repository
     public class UserRepository : IUserRepository
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
+        private readonly IGenericRepository<USER> _userRepo;
 
-        public UserRepository(UnitOfWork unitOfWork, IMapper mapper)
+        public UserRepository(UnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+            _userRepo = _unitOfWork.Repository<USER>();
 
-        public Task<UserDto> AddAsync(UserDto t)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> CountAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> DeleteAsync(UserDto entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ICollection<UserDto>> FindAllAsync(Expression<Func<UserDto, bool>> match)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserDto> FindAsync(Expression<Func<UserDto, bool>> match)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ICollection<UserDto>> FindByAsync(Expression<Func<UserDto, bool>> predicate)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<ICollection<UserDto>> GetAllAsync()
         {
-            var users = await _unitOfWork.Repository<USER>().GetAllAsync();
-            return _mapper.Map<ICollection<UserDto>>(users);
+            var users = await _userRepo.GetAllAsync();
+            return users.Select(user => (UserDto)user).ToList();
         }
 
-        public IQueryable<UserDto> GetAllIncluding(params Expression<Func<UserDto, object>>[] includeProperties)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserDto> GetAsync(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<int> SaveAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<UserDto> UpdateAsync(UserDto t, object key)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IQueryable<UserDto>> IGenericRepository<UserDto>.GetAllIncluding(params Expression<Func<UserDto, object>>[] includeProperties)
-        {
-            throw new NotImplementedException();
-        }
     }
 
-    public interface IUserRepository : IGenericRepository<UserDto>
-    {
-        //Make custom functions available here specific the the Repo.
-    }
+
 }
