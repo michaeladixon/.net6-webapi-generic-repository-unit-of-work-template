@@ -1,55 +1,46 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
-namespace Data.Context.Entities
+namespace Data.Context.Entities;
+
+public static class DbContextExtensions
 {
-    public static class DbContextExtensions
+    public static async Task<List<T>> SqlQueryAsync<T>(
+        this DbContext db,
+        string sql,
+        object[]? parameters = null,
+        CancellationToken cancellationToken = default) where T : class
     {
-        public static async Task<List<T>> SqlQueryAsync<T>(this DbContext db, string sql, object[] parameters = null, CancellationToken cancellationToken = default) where T : class
-        {
-            if (parameters is null)
-            {
-                parameters = new object[] { };
-            }
+        parameters ??= [];
 
-            if (typeof(T).GetProperties().Any())
-            {
-                return await db.Set<T>().FromSqlRaw(sql, parameters).ToListAsync(cancellationToken);
-            }
-            else
-            {
-                await db.Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
-                return default;
-            }
+        if (typeof(T).GetProperties().Length != 0)
+        {
+            return await db.Set<T>().FromSqlRaw(sql, parameters).ToListAsync(cancellationToken);
+        }
+
+        await db.Database.ExecuteSqlRawAsync(sql, parameters, cancellationToken);
+        return [];
+    }
+}
+
+public class OutputParameter<TValue>
+{
+    private bool _valueSet;
+    private TValue? _value;
+
+    public TValue Value
+    {
+        get
+        {
+            if (!_valueSet)
+                throw new InvalidOperationException("Value not set.");
+
+            return _value!;
         }
     }
 
-    public class OutputParameter<TValue>
+    public void SetValue(object? value)
     {
-        private bool _valueSet = false;
-
-        public TValue _value;
-
-        public TValue Value
-        {
-            get
-            {
-                if (!_valueSet)
-                    throw new InvalidOperationException("Value not set.");
-
-                return _value;
-            }
-        }
-
-        internal void SetValue(object value)
-        {
-            _valueSet = true;
-
-            _value = null == value || Convert.IsDBNull(value) ? default(TValue) : (TValue)value;
-        }
+        _valueSet = true;
+        _value = value is null || Convert.IsDBNull(value) ? default : (TValue)value;
     }
 }

@@ -1,32 +1,23 @@
-﻿using Data.Context.Entities;
-using Logic.Attributes;
+using Data.Context.Entities;
 using Logic.IUnitOfWork;
 using Logic.Repository.Generic.Interfaces;
 using Models;
-using System.Linq.Expressions;
 
-namespace Logic.Repository
+namespace Logic.Repository;
+
+public class UserRepository(IUnitOfWork unitOfWork) : IUserRepository
 {
-    [ServiceImplementation(typeof(IUserRepository))]
-    public class UserRepository : IUserRepository
+    private readonly IGenericRepository<USER> _userRepo = unitOfWork.Repository<USER>();
+
+    public async Task<IReadOnlyList<UserDto>> GetAllAsync()
     {
-        private readonly UnitOfWork _unitOfWork;
-        private readonly IGenericRepository<USER> _userRepo;
-
-        public UserRepository(UnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-            _userRepo = _unitOfWork.Repository<USER>();
-
-        }
-
-        public async Task<ICollection<UserDto>> GetAllAsync()
-        {
-            var users = await _userRepo.GetAllAsync();
-            return users.Select(user => (UserDto)user).ToList();
-        }
-
+        var users = await _userRepo.GetAllAsync();
+        return users.Select(UserDto.FromEntity).ToList();
     }
 
-
+    public async Task<UserDto?> GetByIdAsync(long id)
+    {
+        var user = await _userRepo.GetByIdAsync(id);
+        return user is null ? null : UserDto.FromEntity(user);
+    }
 }

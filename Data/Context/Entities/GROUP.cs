@@ -1,11 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Data.Context.Entities
+namespace Data.Context.Entities;
+
+[Table("GROUPS")]
+public class GROUP
 {
-    public partial class GROUP
-    {
-        public long id { get; set; }
-        public string name { get; set; }
-    }
+    [Key]
+    [Column("id")]
+    public long Id { get; set; }
+
+    [Required]
+    [Column("name")]
+    public string Name { get; set; } = string.Empty;
 }

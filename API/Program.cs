@@ -1,28 +1,65 @@
-
+using Data.Context.Entities;
 using Logic.Extensions;
+using Logic.IUnitOfWork;
+using Logic.Repository;
+using Logic.Repository.Generic.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
-namespace API
+var builder = WebApplication.CreateBuilder(args);
+
+// Database
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("dbContext")));
+
+// Repositories and Unit of Work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+
+// Controllers
+builder.Services.AddControllers();
+
+// Swagger/OpenAPI
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
 {
-    public class Program
+    options.EnableAnnotations();
+});
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
     {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args)
-                .Build()
-                .MigrateDatabase()
-                .Run();
-        }
+        policy.WithOrigins("http://localhost:4200", "http://localhost:3000")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            var builder = Host.CreateDefaultBuilder(args);
+var app = builder.Build();
 
-            builder.ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
+// Run migrations
+app.MigrateDatabase();
 
-            return builder;
-        }
-    }
+// Middleware pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Net.Core.App.Template v1");
+        c.DisplayRequestDuration();
+    });
 }
+else
+{
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseCors();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();

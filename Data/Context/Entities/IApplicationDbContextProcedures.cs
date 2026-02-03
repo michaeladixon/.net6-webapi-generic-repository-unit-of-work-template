@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace Data.Context.Entities;
 
-namespace Data.Context.Entities
+/// <summary>
+/// Interface for stored procedure methods.
+/// Add your stored procedure method signatures here.
+/// </summary>
+public interface IApplicationDbContextProcedures
 {
-    public partial interface IApplicationDbContextProcedures
-    {
-        //puts all the stored proc methods with their params here in the interface.
-        Task<int> SomeStoredProcedureMethod(int? example, string parameters, OutputParameter<int> returnValue = null, CancellationToken cancellationToken = default);
-    }
+    // Example: Task<List<SomeResult>> GetSomeDataAsync(int id, CancellationToken cancellationToken = default);
 }
