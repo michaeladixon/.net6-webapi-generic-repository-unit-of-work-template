@@ -1,38 +1,22 @@
-﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
-namespace Data.Context.Entities
+namespace Data.Context.Entities;
+
+// Partial class for design-time DbContext factory (EF migrations)
+public partial class ApplicationDbContext : IDesignTimeDbContextFactory<ApplicationDbContext>
 {
-    //Files named with xxx.partial are custom files that will not change when EF power tools is ran.
-    //This is the base logic that will likely not be changed.
-    public partial class ApplicationDbContext : DbContext, IDesignTimeDbContextFactory<ApplicationDbContext>
+    public ApplicationDbContext CreateDbContext(string[] args)
     {
-        public static IConfiguration? Configuration;
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true)
+            .Build();
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration? configuration)
-            : base(new DbContextOptionsBuilder().UseSqlite(configuration.GetConnectionString("dbContext")).Options)
-        {
-            Configuration = configuration;
-        }
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+        optionsBuilder.UseSqlite(configuration.GetConnectionString("dbContext") ?? "Data Source=demo.db");
 
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-
-          optionsBuilder.UseSqlite(Configuration.GetConnectionString("dbContext"));
- 
-
-        }
-
-        public ApplicationDbContext CreateDbContext(string[] args)
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseSqlite(Configuration.GetConnectionString("dbContext"));
-            return new ApplicationDbContext(optionsBuilder.Options, Configuration);
-        }
-
-
+        return new ApplicationDbContext(optionsBuilder.Options);
     }
 }

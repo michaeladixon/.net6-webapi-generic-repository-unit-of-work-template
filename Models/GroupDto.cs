@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Data.Context.Entities;
 
-namespace Models
+namespace Models;
+
+public class GroupDto : BaseDto
 {
-    public class GroupDto : BaseDto
+    public static GroupDto FromEntity(GROUP group) => new()
     {
-
-
-    }
+        Id = group.Id,
+        Name = group.Name
+    };
 }

@@ -1,35 +1,29 @@
-﻿using Logic.Repository;
-using Models;
-
+using Logic.Repository.Generic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace API.Controllers
+namespace API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class UserController(IUserRepository userRepository) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    [HttpGet]
+    [SwaggerOperation("GetAllUsers", Summary = "Get All Users")]
+    [SwaggerResponse(200, "Users retrieved successfully", typeof(List<UserDto>))]
+    public async Task<ActionResult<IReadOnlyList<UserDto>>> GetAllUsers()
     {
-        private readonly IUserRepository _userRepository;
+        return Ok(await userRepository.GetAllAsync());
+    }
 
-        public UserController(IUserRepository userRepository)
-        {
-            _userRepository = userRepository;
-        }
-        /// <summary>
-        /// Get All Users
-        /// </summary>
-        /// <remarks>Returns a list of data</remarks>
-        /// <response code="200">Users matching filter criteria</response>
-        /// <response code="500">Internal Server Error</response>
-        [HttpGet]
-        [SwaggerOperation("GetAllUsers")]
-        [SwaggerResponse(statusCode: 200, type: typeof(List<UserDto>), description: "Get all data on all users.")]
-        public async Task<IActionResult> GetAllUsers()
-        {
-
-            return StatusCode(200, await _userRepository.GetAllAsync());
-        
-        }
+    [HttpGet("{id:long}")]
+    [SwaggerOperation("GetUserById", Summary = "Get User by ID")]
+    [SwaggerResponse(200, "User found", typeof(UserDto))]
+    [SwaggerResponse(404, "User not found")]
+    public async Task<ActionResult<UserDto>> GetUserById(long id)
+    {
+        var user = await userRepository.GetByIdAsync(id);
+        return user is null ? NotFound() : Ok(user);
     }
 }

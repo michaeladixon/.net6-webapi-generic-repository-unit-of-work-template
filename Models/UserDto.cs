@@ -1,24 +1,21 @@
-﻿using Data.Context.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Data.Context.Entities;
 
-namespace Models
+namespace Models;
+
+public class UserDto : BaseDto
 {
-    public class UserDto : BaseDto
-    {
-        public List<GroupDto> Groups { get; set; } = new();
+    public List<GroupDto> Groups { get; set; } = [];
 
-        public static explicit operator UserDto(USER user)
-        {
-            return new UserDto
-            {
-                Id = user.id,
-                Name = user.name,
-                Groups = user.groups.Split(',').Select(x => new GroupDto { Name = x }).ToList()
-            };
-        }
-    }
+    public static UserDto FromEntity(USER user) => new()
+    {
+        Id = user.Id,
+        Name = user.Name,
+        Groups = string.IsNullOrEmpty(user.Groups)
+            ? []
+            : user.Groups.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(name => new GroupDto { Name = name.Trim() })
+                .ToList()
+    };
+
+    public static explicit operator UserDto(USER user) => FromEntity(user);
 }
